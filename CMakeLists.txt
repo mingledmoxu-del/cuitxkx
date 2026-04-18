@@ -5,9 +5,17 @@ project(MUD_Demo C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+include_directories(
+    inc
+    text
+)
+
 # 添加可执行文件
 add_executable(mud demo/demo.c)
-add_executable(game src/main.c src/parser.c)
+add_executable(game src/main.c 
+src/parser.c
+src/room.c    # 【新增】
+)
 
 # 配置头文件包含目录
 target_include_directories(mud PUBLIC inc)

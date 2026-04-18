@@ -7,9 +7,12 @@ int   parser_argc = 0;
 char *parser_argv[5];
 char  parser_buf[64];
 
+room_loc_t *current_loc = &player_spawn; // 游戏开始在新手村
+
 int main() {
 
     printf("欢迎来到cuitxkx，输入 'quit' 退出\n");
+    cmd_look(1, NULL);
 
     while (1) {
         if (parser_input(parser_buf, sizeof(parser_buf)) == NULL)
