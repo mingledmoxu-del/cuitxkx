@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # 添加可执行文件
-add_executable(mud main.c)
+add_executable(mud ./demo/demo.c)
