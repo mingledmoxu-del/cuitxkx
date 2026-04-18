@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 /* ANSI 颜色代码定义 */
 #define CLR_RESET  "\033[0m"
@@ -11,57 +11,48 @@
 #define CLR_RED    "\033[31m"
 
 /* 方向枚举 */
-typedef enum {
-    NORTH = 0,
-    SOUTH,
-    EAST,
-    WEST,
-    DIR_COUNT
-} Direction;
+typedef enum { NORTH = 0, SOUTH, EAST, WEST, DIR_COUNT } Direction;
 
 /* 房间结构体 */
 typedef struct {
     const char *name;
     const char *description;
-    int exits[DIR_COUNT]; // 存储相邻房间在 world 数组中的索引，-1 表示无出口
+    int         exits[DIR_COUNT]; // 存储相邻房间在 world 数组中的索引，-1 表示无出口
 } Room;
 
 /* 玩家结构体 */
 typedef struct {
     char name[32];
-    int hp;
-    int attack;
-    int defense;
-    int current_room;
+    int  hp;
+    int  attack;
+    int  defense;
+    int  current_room;
 } Player;
 
 /* 全局世界地图 */
-Room world[] = {
-    {
-        "新手村",
-        "一个安静的小村庄。",
-        {-1, -1, 1, 2} // north, south, east (森林), west (山路)
-    },
-    {
-        "森林",
-        "树木茂密，偶尔传来野兽叫声。",
-        {-1, -1, -1, 0} // west -> 新手村
-    },
-    {
-        "山路",
-        "一条通往山寨的崎岖小路。",
-        {-1, -1, 0, -1} // east -> 新手村
-    }
-};
+Room world[] = {{
+                    "新手村", "一个安静的小村庄。", {-1, -1, 1, 2} // north, south, east (森林), west (山路)
+                },
+                {
+                    "森林", "树木茂密，偶尔传来野兽叫声。", {-1, -1, -1, 0} // west -> 新手村
+                },
+                {
+                    "山路", "一条通往山寨的崎岖小路。", {-1, -1, 0, -1} // east -> 新手村
+                }};
 
 /* 辅助函数：获取方向名称 */
-const char* get_dir_name(Direction d) {
+const char *get_dir_name(Direction d) {
     switch (d) {
-        case NORTH: return "north";
-        case SOUTH: return "south";
-        case EAST:  return "east";
-        case WEST:  return "west";
-        default:    return "unknown";
+    case NORTH:
+        return "north";
+    case SOUTH:
+        return "south";
+    case EAST:
+        return "east";
+    case WEST:
+        return "west";
+    default:
+        return "unknown";
     }
 }
 
@@ -70,12 +61,13 @@ void do_look(Player *p) {
     Room *r = &world[p->current_room];
     printf("\n%s你现在位于：%s%s%s\n", CLR_BOLD, CLR_CYAN, r->name, CLR_RESET);
     printf("%s\n", r->description);
-    
+
     printf("出口：");
     bool first = true;
     for (int i = 0; i < DIR_COUNT; i++) {
         if (r->exits[i] != -1) {
-            if (!first) printf(" ");
+            if (!first)
+                printf(" ");
             printf("%s%s%s", CLR_YELLOW, get_dir_name(i), CLR_RESET);
             first = false;
         }
@@ -93,13 +85,17 @@ void do_status(Player *p) {
 
 /* 功能：移动 */
 void do_go(Player *p, const char *dir_str) {
-    Room *r = &world[p->current_room];
+    Room     *r = &world[p->current_room];
     Direction dir = -1;
 
-    if (strcmp(dir_str, "north") == 0) dir = NORTH;
-    else if (strcmp(dir_str, "south") == 0) dir = SOUTH;
-    else if (strcmp(dir_str, "east") == 0) dir = EAST;
-    else if (strcmp(dir_str, "west") == 0) dir = WEST;
+    if (strcmp(dir_str, "north") == 0)
+        dir = NORTH;
+    else if (strcmp(dir_str, "south") == 0)
+        dir = SOUTH;
+    else if (strcmp(dir_str, "east") == 0)
+        dir = EAST;
+    else if (strcmp(dir_str, "west") == 0)
+        dir = WEST;
 
     if (dir == -1) {
         printf("那个方向是哪？（请输入 north/south/east/west）\n");
@@ -121,25 +117,27 @@ void do_go(Player *p, const char *dir_str) {
 #endif
 
 int main() {
-    #ifdef _WIN32
+#ifdef _WIN32
     // 设置控制台输出代码页为 UTF-8 (65001) 以解决中文乱码
     SetConsoleOutputCP(65001);
-    #endif
+#endif
 
     Player player = {"player", 100, 10, 5, 0};
-    char input[256];
-    char cmd[32], arg[32];
+    char   input[256];
+    char   cmd[32], arg[32];
 
     printf("欢迎来到简化版文字江湖！\n");
     do_look(&player);
 
     while (true) {
         printf("> ");
-        if (!fgets(input, sizeof(input), stdin)) break;
+        if (!fgets(input, sizeof(input), stdin))
+            break;
 
         // 简单的指令解析
         int num = sscanf(input, "%s %s", cmd, arg);
-        if (num <= 0) continue;
+        if (num <= 0)
+            continue;
 
         if (strcmp(cmd, "quit") == 0) {
             printf("游戏结束。\n");
