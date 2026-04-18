@@ -1,0 +1,6 @@
+*.exe
+*.o
+.vscode/
+a.exe
+mud.exe
+mud_demo.exe
