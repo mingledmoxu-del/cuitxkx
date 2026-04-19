@@ -15,6 +15,8 @@ add_executable(mud demo/demo.c)
 add_executable(game src/main.c 
 src/parser.c
 src/room.c    # 【新增】
+src/item.c
+src/player.c
 )
 
 # 配置头文件包含目录

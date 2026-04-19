@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "item.h"
 #include "parser.h"
+#include "player.h"
 
 /* --- 全局解析器变量定义 --- */
-int   parser_argc = 0;       /* 指令参数个数 */
-char *parser_argv[5];        /* 参数字符串指针数组（最多支持 5 个参数） */
-char  parser_buf[64];        /* 用户输入原始文本缓冲区 */
+int   parser_argc = 0; /* 指令参数个数 */
+char *parser_argv[5];  /* 参数字符串指针数组（最多支持 5 个参数） */
+char  parser_buf[64];  /* 用户输入原始文本缓冲区 */
 
-/* 玩家当前的地理位置，初始设定为「player_spawn」（在 room.c 中定义） */
-room_loc_t *current_loc = &player_spawn; 
+// /* 玩家当前的地理位置，初始设定为「player_spawn」（在 room.c 中定义） */
+// room_loc_t *current_loc = &player_spawn;
 
 /**
  * @brief 游戏程序唯一入口
@@ -22,7 +24,8 @@ int main() {
 
     /* 初始进入游戏时自动执行「look」指令，展示周遭环境 */
     cmd_look(1, NULL);
-
+    player_add_item(&omo, &con_wound_medic);
+    player_add_item(&omo, &con_grand_medic);
     /* 核心游戏引擎循环 */
     while (1) {
         /* 第一步：获取玩家输入。如果检测到 EOF 或输入错误，则退出循环 */

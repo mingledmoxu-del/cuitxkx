@@ -3,6 +3,7 @@
 
 #include <util.h>
 
+#include "item.h"
 #include "room_spawn.h"
 #include "room_spawn_treehole.h"
 
@@ -14,9 +15,9 @@ typedef struct room_npc_s room_npc_t;
  * 包含房间的基本信息以及与其他房间的连接关系（出口）
  */
 typedef struct room_loc_s {
-    int         room_id;     /* 房间唯一标识符 */
-    const char *room_name;   /* 房间名称 */
-    const char *room_desc;   /* 房间的详细中文描述 */
+    int         room_id;   /* 房间唯一标识符 */
+    const char *room_name; /* 房间名称 */
+    const char *room_desc; /* 房间的详细中文描述 */
 
     /* 出口指针：指向相邻的房间结构体。如果为 NULL，表示该方向不可行 */
     struct room_loc_s *north; /* 北方 */
@@ -27,6 +28,7 @@ typedef struct room_loc_s {
     struct room_loc_s *down;  /* 下方（如地洞、下楼） */
 
     room_npc_t *room_npc[3]; /* 房间内存在的 NPC，最多支持 3 个 */
+    item_t     *room_item[5];
 } room_loc_t;
 
 /**
