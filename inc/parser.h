@@ -20,13 +20,15 @@ typedef int (*command_handler)(int argc, char **argv);
 typedef struct cmd_entry_e cmd_entry_t;
 
 /* --- 指令处理函数声明 --- */
-int cmd_quit(int argc, char **argv); /* 退出游戏 */
-int cmd_help(int argc, char **argv); /* 显示帮助功能 */
-int cmd_go(int argc, char **argv);   /* 处理玩家移动逻辑 */
-int cmd_look(int argc, char **argv); /* 观察当前房间环境 */
-int cmd_talk(int argc, char **argv); /* 与指定 NPC 进行对话 */
-int cmd_see(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
-int cmd_get(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
+int cmd_quit(int argc, char **argv);  /* 退出游戏 */
+int cmd_help(int argc, char **argv);  /* 显示帮助功能 */
+int cmd_go(int argc, char **argv);    /* 处理玩家移动逻辑 */
+int cmd_look(int argc, char **argv);  /* 观察当前房间环境 */
+int cmd_talk(int argc, char **argv);  /* 与指定 NPC 进行对话 */
+int cmd_see(int argc, char **argv);   /* 检视指定物体或人物的详细描述 */
+int cmd_get(int argc, char **argv);   /* 检视指定物体或人物的详细描述 */
+int cmd_wear(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
+int cmd_check(int argc, char **argv); /* 检视指定物体或人物的详细描述 */
 
 /* --- 核心解析器函数声明 --- */
 

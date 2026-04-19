@@ -10,6 +10,7 @@ typedef struct player_def_s {
     const char       *player_id;
     int               hp, max_hp; // 增加当前血量和上限
     int               mp, max_mp;
+    int               spirit, max_spirit;
     item_t           *weapon;
     item_t           *armor_head;
     item_t           *armor_body;
@@ -21,5 +22,6 @@ typedef struct player_def_s {
 extern player_def_t omo;
 
 void player_add_item(player_def_t *player, item_t *item);
-
+int  player_get_atk(player_def_t *player_id);
+int  player_get_def(player_def_t *player_id);
 #endif

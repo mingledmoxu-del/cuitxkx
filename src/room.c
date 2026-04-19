@@ -29,7 +29,7 @@ room_loc_t player_spawn_tree_hole = {
     .room_name = "树洞",
     .room_desc = SPAWN_TREEHOLE_DESC, /* 引用 text/room_spawn_treehole.h 中的宏 */
     .up = &player_spawn,              /* 向上返回新手村 */
-    .room_item[0] = &player_spawn_treehole_sword,
+    .room_item[0] = &weapon_sword,
 };
 
 /**

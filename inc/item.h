@@ -3,6 +3,9 @@
 
 #include <util.h>
 
+#include "con_desc.h"
+#include "weapon_desc.h"
+
 typedef struct item_weapon_s {
     int weapon_atk;
 } item_weapon_t;
@@ -14,6 +17,7 @@ typedef struct item_armor_s {
 typedef struct item_consumable_s {
     int con_hp_heal;
     int con_mp_add;
+    int con_sp_add;
 } item_consumable_t;
 
 // 物品类型枚举
@@ -48,8 +52,8 @@ typedef struct inventory_node_s {
     struct inventory_node_s *next;
 } inventory_node_t;
 
-extern item_t player_spawn_treehole_sword;
+extern item_t weapon_sword;
 extern item_t con_wound_medic;
 extern item_t con_grand_medic;
-
+extern item_t con_foucus_medic;
 #endif

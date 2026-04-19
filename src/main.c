@@ -43,7 +43,7 @@ int main() {
     system("clear");
     /* 物品与角色属性初始化 */
     player_add_item(&omo, &con_wound_medic);
-    player_add_item(&omo, &con_grand_medic);
+    player_add_item(&omo, &con_foucus_medic);
 
     /* 初始进入游戏时自动展示周遭环境 */
     cmd_look(1, NULL);
