@@ -35,17 +35,12 @@ int main() {
 
     /* 等待用户交互：阻塞直至按下回车键 */
     getchar();
-
-    sleep(1);
     printf(">正在载入江湖世界...\n");
-    printf("\n");
-    sleep(1);
+    usleep(300000);
     printf(">正在初始化地图...\n");
-    printf("\n");
-    sleep(1);
+    usleep(300000);
     printf(">正在初始化人物...\n");
-    printf("\n");
-
+    system("clear");
     /* 物品与角色属性初始化 */
     player_add_item(&omo, &con_wound_medic);
     player_add_item(&omo, &con_grand_medic);
@@ -67,5 +62,6 @@ int main() {
     }
 
     /* 游戏程序结束 */
+    system("clear");
     return 0;
 }
