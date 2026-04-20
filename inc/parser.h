@@ -29,6 +29,7 @@ int cmd_see(int argc, char **argv);   /* 检视指定物体或人物的详细描
 int cmd_get(int argc, char **argv);   /* 检视指定物体或人物的详细描述 */
 int cmd_wear(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
 int cmd_check(int argc, char **argv); /* 检视指定物体或人物的详细描述 */
+int cmd_eat(int argc, char **argv);   /* 检视指定物体或人物的详细描述 */
 
 /* --- 核心解析器函数声明 --- */
 

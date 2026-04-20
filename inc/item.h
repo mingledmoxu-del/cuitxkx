@@ -49,6 +49,7 @@ typedef struct item_s {
 
 typedef struct inventory_node_s {
     item_t                  *item;
+    int                      count;
     struct inventory_node_s *next;
 } inventory_node_t;
 

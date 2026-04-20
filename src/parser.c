@@ -87,25 +87,72 @@ static int player_equip_item(player_def_t *player_id, item_t *item) {
     return 1;
 }
 
+void player_add_item(player_def_t *player, item_t *item) {
+    if (player == NULL || item == NULL)
+        return;
+    /* 1. 先在背包里找有没有同 ID 的物品（实现堆叠） */
+    inventory_node_t *curr = player->player_bag;
+    while (curr != NULL) {
+        if (strcmp(curr->item->item_id, item->item_id) == 0) {
+            curr->count++; // 找到了，直接增加数量
+            return;        // 增加完直接结束函数，不需要再新建节点
+        }
+        curr = curr->next;
+    }
+
+    inventory_node_t *new_node = (inventory_node_t *)malloc(sizeof(inventory_node_t));
+    if (new_node != NULL) {
+        new_node->item = item;
+        new_node->count = 1;
+        new_node->next = player->player_bag;
+        player->player_bag = new_node;
+    }
+}
+
 static item_t *player_remove_item(player_def_t *player_id, const char *item_id) {
     inventory_node_t *curr_node = player_id->player_bag;
     inventory_node_t *prev_node = NULL;
 
     while (curr_node != NULL) {
         if (strcmp(curr_node->item->item_id, item_id) == 0) {
-            if (prev_node == NULL) {
-                player_id->player_bag = curr_node->next;
-            } else {
-                prev_node->next = curr_node->next;
+            curr_node->count--;
+            item_t *target_item = curr_node->item; // 记录要返回的物品指针
+            if (curr_node->count <= 0) {
+                if (prev_node == NULL) {
+                    player_id->player_bag = curr_node->next;
+                } else {
+                    prev_node->next = curr_node->next;
+                }
+                free(curr_node);
             }
-            item_t *target_item = curr_node->item;
-            free(curr_node);
             return target_item;
         }
         prev_node = curr_node;
         curr_node = curr_node->next;
     }
     return NULL;
+}
+
+static void player_treatment_status(player_def_t *player_id, item_t *item) {
+
+    if (item->item_u.item_con.con_hp_heal > 0) {
+        player_id->hp += item->item_u.item_con.con_hp_heal;
+        if (player_id->hp > player_id->max_hp) {
+            player_id->hp = player_id->max_hp;
+        }
+    }
+    if (item->item_u.item_con.con_mp_add > 0) {
+        player_id->mp += item->item_u.item_con.con_mp_add;
+        if (player_id->mp > player_id->max_mp) {
+            player_id->mp = player_id->max_mp;
+        }
+    }
+    if (item->item_u.item_con.con_sp_add > 0) {
+        player_id->spirit += item->item_u.item_con.con_sp_add;
+        if (player_id->spirit > player_id->max_spirit) {
+            player_id->spirit = player_id->max_spirit;
+        }
+    }
 }
 
 /**
@@ -132,6 +179,7 @@ static cmd_entry_t cmd_table[] = {
     {"get", cmd_get, "拿起某物", "用法：get [物品ID] 将其收入背包"},
     {"wear", cmd_wear, "装备某物", "用法：wear [物品ID] 将其装备在身上"},
     {"check", cmd_check, "检视某物", "用法：check [物品ID] 查看背包内的物品"},
+    {"eat", cmd_eat, "服用某物", "用法：eat [物品ID] 服用背包内的消耗品"},
     {NULL, NULL, NULL, NULL},
 };
 
@@ -507,6 +555,31 @@ int cmd_check(int argc, char **argv) {
             break;
         }
     }
+    return 0;
+}
+
+int cmd_eat(int argc, char **argv) {
+    inventory_node_t *curr_node;
+    curr_node = omo.player_bag;
+    item_t *eat_item;
+    eat_item = player_find_item(&omo, argv[1]);
+    if (argc < 2) {
+        printf("你要吃什么？\n");
+        while (curr_node != NULL) {
+            printf("『%s』(%s) * %d\n", curr_node->item->item_name, curr_node->item->item_id, curr_node->count);
+            curr_node = curr_node->next;
+        }
+        return 0;
+    }
+
+    if (eat_item == NULL) {
+        printf("背包里没有这样东西。\n");
+
+    } else {
+        player_remove_item(&omo, argv[1]);
+        player_treatment_status(&omo, eat_item);
+    }
+
     return 0;
 }
 
