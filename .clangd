@@ -1,0 +1,17 @@
+CompileFlags:
+  Add:
+    - -I/home/omo/cuitxkx/inc
+    - -I/home/omo/cuitxkx/text
+  CompilationDatabase: /home/omo/cuitxkx/build
+
+Index:
+  Background: Build
+
+# 针对 C 语言文件（含 .h）显式指定标准和类型，防范被误识别为 Objective-C
+If:
+  PathMatch: .*\.(c|h)
+CompileFlags:
+  Add:
+    - -std=c11
+    - -x
+    - c

@@ -1,1 +1,27 @@
-build/compile_commands.json
+[
+  {
+    "directory": "/home/omo/cuitxkx",
+    "command": "/usr/bin/cc -I/home/omo/cuitxkx/inc -I/home/omo/cuitxkx/text -std=gnu11 -x c -c /home/omo/cuitxkx/src/main.c",
+    "file": "/home/omo/cuitxkx/src/main.c"
+  },
+  {
+    "directory": "/home/omo/cuitxkx",
+    "command": "/usr/bin/cc -I/home/omo/cuitxkx/inc -I/home/omo/cuitxkx/text -std=gnu11 -x c -c /home/omo/cuitxkx/src/parser.c",
+    "file": "/home/omo/cuitxkx/src/parser.c"
+  },
+  {
+    "directory": "/home/omo/cuitxkx",
+    "command": "/usr/bin/cc -I/home/omo/cuitxkx/inc -I/home/omo/cuitxkx/text -std=gnu11 -x c -c /home/omo/cuitxkx/src/skill.c",
+    "file": "/home/omo/cuitxkx/src/skill.c"
+  },
+  {
+    "directory": "/home/omo/cuitxkx",
+    "command": "/usr/bin/cc -I/home/omo/cuitxkx/inc -I/home/omo/cuitxkx/text -std=gnu11 -x c -c /home/omo/cuitxkx/src/item.c",
+    "file": "/home/omo/cuitxkx/src/item.c"
+  },
+  {
+    "directory": "/home/omo/cuitxkx",
+    "command": "/usr/bin/cc -I/home/omo/cuitxkx/inc -I/home/omo/cuitxkx/text -std=gnu11 -x c -c /home/omo/cuitxkx/src/player.c",
+    "file": "/home/omo/cuitxkx/src/player.c"
+  }
+]
