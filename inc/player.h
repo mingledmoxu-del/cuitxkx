@@ -4,6 +4,7 @@
 #include <util.h>
 
 #include "room.h"
+#include "skill.h"
 
 typedef struct player_def_s {
     const char       *player_name;
@@ -17,6 +18,8 @@ typedef struct player_def_s {
     item_t           *armor_leg;
     room_loc_t       *player_cur_loc;
     inventory_node_t *player_bag;
+    skill_node_t     *player_skill;
+    player_skill_t   *active_skill;
 } player_def_t;
 
 extern player_def_t omo;

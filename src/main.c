@@ -7,6 +7,7 @@
 #include "item.h"
 #include "parser.h"
 #include "player.h"
+#include "skill.h"
 
 /* --- 全局解析器变量定义 --- */
 int   parser_argc = 0; /* 指令参数个数 */
@@ -47,7 +48,7 @@ int main() {
     /* 物品与角色属性初始化 */
     player_add_item(&omo, &con_wound_medic);
     player_add_item(&omo, &con_foucus_medic);
-
+    player_add_skill(&omo, &skill_zazen);
     /* 初始进入游戏时自动展示周遭环境 */
     cmd_look(1, NULL);
     /* 核心游戏引擎循环 */

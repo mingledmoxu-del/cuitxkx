@@ -17,6 +17,7 @@ src/parser.c
 src/room.c    # 【新增】
 src/item.c
 src/player.c
+src/skill.c
 )
 
 # 配置头文件包含目录

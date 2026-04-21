@@ -180,6 +180,7 @@ static cmd_entry_t cmd_table[] = {
     {"wear", cmd_wear, "装备某物", "用法：wear [物品ID] 将其装备在身上"},
     {"check", cmd_check, "检视某物", "用法：check [物品ID] 查看背包内的物品"},
     {"eat", cmd_eat, "服用某物", "用法：eat [物品ID] 服用背包内的消耗品"},
+    {"cast", cmd_cast, "激活技能", "用法：cast [技能ID] 激活或者使用技能"},
     {NULL, NULL, NULL, NULL},
 };
 
@@ -389,82 +390,116 @@ int cmd_talk(int argc, char **argv) {
  */
 int cmd_see(int argc, char **argv) {
     if (argc == 1) {
-        printf("你要仔细查看谁？（提示：输入 'see self' 或 'see %s' 查看自己）\n", omo.player_id);
+        printf("你想仔细查看什么？\n");
+        printf("用法：see [子命令 | ID]\n");
+        printf("可用子命令：\n");
+        printf("  - " CLR_YELLOW "hp" CLR_RESET "    : 查看气血状态与基本属性\n");
+        printf("  - " CLR_YELLOW "bag" CLR_RESET "   : 查看随身行囊物品\n");
+        printf("  - " CLR_YELLOW "skill" CLR_RESET " : 查看已领悟的武学招式\n");
+        printf("  - " CLR_YELLOW "self" CLR_RESET "  : 查看个人简报（混合模式）\n");
         return 0;
     }
 
-    /* 1. 特色分支：查看玩家自身状态看板（指令：see self 或 see [玩家ID]） */
-    if (strcmp(argv[1], "self") == 0 || strcmp(argv[1], omo.player_id) == 0) {
-        printf(CLR_CYAN CLR_BOLD " === 江湖档案簿 : %s (%s) === " CLR_RESET "\n", omo.player_name, omo.player_id);
+    /* 1. 处理玩家自身状态相关分支 */
+    int is_self = (strcmp(argv[1], "self") == 0 || strcmp(argv[1], omo.player_id) == 0);
+    int is_hp = (strcmp(argv[1], "hp") == 0 || strcmp(argv[1], "status") == 0);
+    int is_bag = (strcmp(argv[1], "bag") == 0 || strcmp(argv[1], "inv") == 0);
+    int is_skill = (strcmp(argv[1], "skill") == 0 || strcmp(argv[1], "skills") == 0);
 
-        /* 状态条展示 */
+    /* --- [模块A] 气血与属性展示 --- */
+    if (is_self || is_hp) {
+        printf(CLR_CYAN CLR_BOLD " === 江湖档案簿 : %s (%s) === " CLR_RESET "\n", omo.player_name, omo.player_id);
         print_status_bar("气血 (HP)", omo.hp, omo.max_hp, CLR_RED);
         print_status_bar("内力 (MP)", omo.mp, omo.max_mp, CLR_BLUE);
         print_status_bar("精神 (SP)", omo.spirit, omo.max_spirit, CLR_MAGENTA);
 
-        /* 动态属性展示 */
-        printf(CLR_CYAN "【 战斗属性 】" CLR_RESET "\n");
-        printf("  攻击力：%d\n", player_get_atk(&omo));
-        printf("  防御力：%d\n", player_get_def(&omo));
+        printf(CLR_CYAN "【 基础属性 】" CLR_RESET " 攻击: " CLR_YELLOW "%d" CLR_RESET " | 防御: " CLR_YELLOW
+                        "%d" CLR_RESET "\n",
+               player_get_atk(&omo), player_get_def(&omo));
 
-        /* 展示身上的装备位（头、身、下装、武器） */
-        /* 使用了指针判空 logic：如果没穿装备则提示（空） */
-        printf(CLR_CYAN "【 穿戴物 】" CLR_RESET "\n");
-        printf("  头戴：%s\n", omo.armor_head ? omo.armor_head->item_name : CLR_WHITE "（空）" CLR_RESET);
-        if (omo.armor_head)
-            printf("        ID: %s\n", omo.armor_head->item_id);
+        printf(CLR_CYAN "【 此时穿戴 】" CLR_RESET "\n");
+        printf("  头戴: %s  |  身着: %s\n", omo.armor_head ? omo.armor_head->item_name : "（空）",
+               omo.armor_body ? omo.armor_body->item_name : "（空）");
+        printf("  下装: %s  |  手持: %s\n", omo.armor_leg ? omo.armor_leg->item_name : "（空）",
+               omo.weapon ? omo.weapon->item_name : "（空）");
+        if (is_hp && !is_self)
+            return 0; // 如果只看hp，展示完这里的属性就结束
+    }
 
-        printf("  身着：%s\n", omo.armor_body ? omo.armor_body->item_name : CLR_WHITE "（空）" CLR_RESET);
-        if (omo.armor_body)
-            printf("        ID: %s\n", omo.armor_body->item_id);
-
-        printf("  下装：%s\n", omo.armor_leg ? omo.armor_leg->item_name : CLR_WHITE "（空）" CLR_RESET);
-        if (omo.armor_leg)
-            printf("        ID: %s\n", omo.armor_leg->item_id);
-
-        printf("  手持：%s\n", omo.weapon ? omo.weapon->item_name : CLR_WHITE "（空）" CLR_RESET);
-        if (omo.weapon)
-            printf("        ID: %s\n", omo.weapon->item_id);
-
-        /* 【核心升级】动态遍历背包链表 */
-        /* 这种方式支持“无限容量背包”，每一个新增物品都是链表的一个新节点 */
+    /* --- [模块B] 随身行囊展示 --- */
+    if (is_self || is_bag) {
         printf(CLR_CYAN "【 随身行囊 】" CLR_RESET "\n  ");
         inventory_node_t *node = omo.player_bag;
         int               count = 0;
         while (node != NULL) {
             printf("『%s』(%s) ", node->item->item_name, node->item->item_id);
-            node = node->next; // 移动到链表的下一个物品
+            node = node->next;
             count++;
         }
         if (count == 0)
-            printf("（行囊空空如也）");
+            printf("（囊中羞涩，空无一物）");
         printf("\n");
-
-        printf(CLR_CYAN "【 当前位置 】" CLR_RESET " %s\n", omo.player_cur_loc->room_name);
-        return 0;
+        if (is_bag && !is_self)
+            return 0;
     }
 
-    if (argc == 2) {
-        /* 2. 扫描环境：查找 NPC */
-        for (int i = 0; i < 3 && omo.player_cur_loc->room_npc[i] != NULL; i++) {
-            if (strcmp(argv[1], omo.player_cur_loc->room_npc[i]->room_npc_id) == 0) {
-                printf("%s\n", omo.player_cur_loc->room_npc[i]->room_npc_desc);
+    /* --- [模块C] 武学招式详展 --- */
+    if (is_self || is_skill) {
+        printf(CLR_CYAN "【 已领悟之武学 】" CLR_RESET "\n");
+
+        /* 1. 先展示当前激活/挂载的技能 */
+        if (omo.active_skill) {
+            printf("  " CLR_BOLD CLR_MAGENTA ">> 当前激活招式 <<" CLR_RESET " 『%s』(%s)\n",
+                   omo.active_skill->skill_name, omo.active_skill->skill_id);
+        }
+
+        /* 2. 遍历技能链表详述 */
+        skill_node_t *s_node = omo.player_skill;
+        int           s_count = 0;
+        while (s_node != NULL) {
+            player_skill_t *s = s_node->skill;
+            char            active_mark = (omo.active_skill == s) ? '*' : ' ';
+
+            // 打印一行简要信息
+            printf(" %c [Lvl %d] " CLR_YELLOW "%s" CLR_RESET " (%s) ", active_mark, s->skill_level, s->skill_name,
+                   s->skill_id);
+
+            // 如果是专门看技能，显示得更详细
+            if (is_skill) {
+                printf("\n    消耗: MP:%d SP:%d HP:%d | %s", s->skill_mp_cost, s->skill_sp_cost, s->skill_hp_cost,
+                       s->skill_desc);
+            }
+            printf("\n");
+
+            s_node = s_node->next;
+            s_count++;
+        }
+        if (s_count == 0)
+            printf("  （你目前尚未领悟任何江湖招式）\n");
+
+        if (is_skill || is_self) {
+            printf(CLR_CYAN "【 当前位置 】" CLR_RESET " %s\n", omo.player_cur_loc->room_name);
+            return 0;
+        }
+    }
+
+    /* 2. 原有的扫描环境（NPC/物品）逻辑 */
+    for (int i = 0; i < 3 && omo.player_cur_loc->room_npc[i] != NULL; i++) {
+        if (strcmp(argv[1], omo.player_cur_loc->room_npc[i]->room_npc_id) == 0) {
+            printf("%s\n", omo.player_cur_loc->room_npc[i]->room_npc_desc);
+            return 0;
+        }
+    }
+    for (int i = 0; i < 5; i++) {
+        if (omo.player_cur_loc->room_item[i] != NULL) {
+            if (strcmp(argv[1], omo.player_cur_loc->room_item[i]->item_id) == 0) {
+                printf("%s\n", omo.player_cur_loc->room_item[i]->item_desc);
                 return 0;
             }
         }
-
-        /* 3. 扫描环境：查找 房间地上的物品 */
-        for (int i = 0; i < 5; i++) {
-            if (omo.player_cur_loc->room_item[i] != NULL) {
-                if (strcmp(argv[1], omo.player_cur_loc->room_item[i]->item_id) == 0) {
-                    printf("%s\n", omo.player_cur_loc->room_item[i]->item_desc);
-                    return 0;
-                }
-            }
-        }
-
-        printf("此处四下空旷，并没有所谓「" CLR_YELLOW CLR_BOLD "%s" CLR_RESET "」的踪影。\n", argv[1]);
     }
+
+    printf("此处四下空旷，并没有所谓「" CLR_YELLOW CLR_BOLD "%s" CLR_RESET "」的踪影。\n", argv[1]);
     return 0;
 }
 
@@ -581,6 +616,13 @@ int cmd_eat(int argc, char **argv) {
     }
 
     return 0;
+}
+
+int cmd_cast(int argc, char **argv) {
+    if (argc == 1) {
+        printf("你要使用什么技能？\n");
+        return 0;
+    }
 }
 
 /**
