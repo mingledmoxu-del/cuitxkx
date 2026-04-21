@@ -1,17 +1,18 @@
-CompileFlags:
-  Add:
-    - -I/home/omo/cuitxkx/inc
-    - -I/home/omo/cuitxkx/text
-  CompilationDatabase: /home/omo/cuitxkx/build
+# .clangd 配置文件
+
+# 1. 告诉 clangd 编译数据库（compile_commands.json）就在 build 目录里
+CompilationDatabase: build/
 
 Index:
   Background: Build
 
-# 针对 C 语言文件（含 .h）显式指定标准和类型，防范被误识别为 Objective-C
+# 2. 针对所有 C 文件添加额外的搜索标志
 If:
   PathMatch: .*\.(c|h)
 CompileFlags:
   Add:
     - -std=c11
+    - -Iinc      # 强制加入 inc 目录作为头文件搜索路径
+    - -Itext     # 强制加入 text 目录
     - -x
     - c

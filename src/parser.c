@@ -324,7 +324,7 @@ int cmd_look(int argc, char **argv) {
     if (omo.player_cur_loc->room_npc[0] != NULL) {
         printf(CLR_CYAN "你注意到了这里还有：" CLR_RESET);
         printf(CLR_YELLOW CLR_BOLD);
-        for (int i = 0; i < 3 && omo.player_cur_loc->room_npc[i] != NULL; i++) {
+        for (int i = 0; i < 10 && omo.player_cur_loc->room_npc[i] != NULL; i++) {
             printf("%s(%s) ", omo.player_cur_loc->room_npc[i]->room_npc_name,
                    omo.player_cur_loc->room_npc[i]->room_npc_id);
         }
@@ -623,6 +623,31 @@ int cmd_cast(int argc, char **argv) {
         printf("你要使用什么技能？\n");
         return 0;
     }
+
+    player_skill_t *player_skill;
+    player_skill = player_find_skill(&omo, argv[1]);
+    time_t curr_time = time(NULL);
+    if (player_skill == NULL) {
+        printf("你还未习得此技能。\n");
+        return 0;
+    }
+
+    if (player_skill->skill_type == SKILL_TYPE_ACTIVE) {
+        int    cd_limit = player_skill->skill_cast_type_t.active.active_skill_cd;
+        double delta = difftime(curr_time, player_skill->skill_last_cast_time);
+        if (delta < cd_limit) {
+            printf("招式未稳，还需等待 %d 秒。\n", (int)(cd_limit - delta));
+            return 0; // 被拦截，不准出招
+        }
+    }
+
+    // 2. 核心：捕获返回值，成功才进 CD
+    if (player_skill->skill_cast(player_skill, &omo, &omo) == 1) {
+        player_skill->skill_last_cast_time = curr_time; // 只有成功了，闹钟才重置
+        player_skill_exp_add(&omo, player_skill);
+    }
+
+    return 0;
 }
 
 /**

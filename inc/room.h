@@ -10,6 +10,11 @@
 /* NPC 结构体的前置声明 */
 typedef struct room_npc_s room_npc_t;
 
+/* NPC 身份类型 */
+typedef struct room_npc_neut_s {
+
+} room_npc_neut_t;
+
 /**
  * @brief 房间/地点结构体
  * 包含房间的基本信息以及与其他房间的连接关系（出口）
@@ -27,7 +32,7 @@ typedef struct room_loc_s {
     struct room_loc_s *up;    /* 上方（如上楼、爬树） */
     struct room_loc_s *down;  /* 下方（如地洞、下楼） */
 
-    room_npc_t *room_npc[3]; /* 房间内存在的 NPC，最多支持 3 个 */
+    room_npc_t *room_npc[10]; /* 房间内存在的 NPC，最多支持 10 个 */
     item_t     *room_item[5];
 } room_loc_t;
 
@@ -39,8 +44,11 @@ typedef struct room_npc_s {
     const char *room_npc_name;   /* NPC 姓名 */
     const char *room_npc_id;     /* 英文 ID，用户输入指令时使用（如 "guider"） */
     const char *room_npc_desc;   /* 检视 (see) 时显示的详细描述 */
-    int         room_npc_hp;     /* 生命值（为战斗系统预留） */
     const char *room_npc_dialog; /* 进行对话 (talk) 时显示的默认内容 */
+
+    int room_npc_hp, room_npc_max_hp; /* 生命值（为战斗系统预留） */
+    int room_npc_atk, room_npc_def;
+
 } room_npc_t;
 
 /* --- 全局变量声明 --- */

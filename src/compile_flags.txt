@@ -1,3 +1,0 @@
--I/home/omo/cuitxkx/inc
--I/home/omo/cuitxkx/text
--std=c11
