@@ -1,5 +1,25 @@
 #include "parser.h"
 
+void combat_tick(player_def_t *player_id) {
+    if (player_id->fight_target == NULL)
+        return;
+    time_t time_now = time(NULL);
+    if (time_now - player_id->last_atk_time < 2)
+        return;
+
+    printf("你对这%s发起攻击。\n", player_id->fight_target->room_npc_name);
+    int player_dmg = player_get_atk(&omo) - player_id->fight_target->room_npc_def;
+    player_id->fight_target->room_npc_hp -= player_dmg;
+    printf("造成%d点伤害，剩余%d血量。\n", player_dmg, player_id->fight_target->room_npc_hp);
+
+    player_id->last_atk_time = time_now;
+
+    if (player_id->fight_target->room_npc_hp <= 0) {
+        printf("%s死了\n", player_id->fight_target->room_npc_name);
+        player_id->fight_target = NULL;
+    }
+}
+
 /**
  * @brief 内部辅助：绘制彩色进度条
  * @param label 标签名称（如 HP/MP）
@@ -155,6 +175,19 @@ static void player_treatment_status(player_def_t *player_id, item_t *item) {
     }
 }
 
+static room_npc_t *player_find_npc(player_def_t *player_id, const char *npc_name) {
+    if (player_id == NULL | npc_name == NULL)
+        return NULL;
+    for (int i = 0; i < 10; i++) {
+        if (player_id->player_cur_loc->room_npc[i] == NULL)
+            continue;
+        if (strcmp(npc_name, player_id->player_cur_loc->room_npc[i]->room_npc_id) == 0) {
+            return player_id->player_cur_loc->room_npc[i];
+        }
+    }
+    return NULL;
+}
+
 /**
  * @brief 指令条目结构体定义
  */
@@ -181,6 +214,7 @@ static cmd_entry_t cmd_table[] = {
     {"check", cmd_check, "检视某物", "用法：check [物品ID] 查看背包内的物品"},
     {"eat", cmd_eat, "服用某物", "用法：eat [物品ID] 服用背包内的消耗品"},
     {"cast", cmd_cast, "激活技能", "用法：cast [技能ID] 激活或者使用技能"},
+    {"kill", cmd_kill, "杀死某人", "用法：kill [人物ID] 与某人触发战斗"},
     {NULL, NULL, NULL, NULL},
 };
 
@@ -589,6 +623,8 @@ int cmd_check(int argc, char **argv) {
         default:
             break;
         }
+    } else {
+        printf("你背包里没有这样东西。\n");
     }
     return 0;
 }
@@ -650,6 +686,29 @@ int cmd_cast(int argc, char **argv) {
     return 0;
 }
 
+int cmd_kill(int argc, char **argv) {
+
+    if (argc == 1) {
+        printf("你要和谁战斗？\n");
+        return 0;
+    }
+
+    room_npc_t *kill_target;
+    kill_target = player_find_npc(&omo, argv[1]);
+
+    if (kill_target == NULL) {
+        printf("没有找到这个人。\n");
+        return 0;
+    }
+    if (kill_target->room_npc_type == NPC_TYPE_ENEMY) {
+        printf("与%s开始战斗！\n", kill_target->room_npc_name);
+        omo.fight_target = kill_target;
+    } else {
+        printf("不能与%s发生战斗。\n", kill_target->room_npc_name);
+    }
+    return 0;
+}
+
 /**
  * @brief 实现自定义的提示符输入
  */
@@ -690,6 +749,10 @@ int parser_split(char *line, char **argv, int max_args) {
 int parser_execute(int argc, char **argv) {
     if (argc == 0)
         return 0;
+
+    // if(kill_target == NULL){
+
+    // }
 
     for (int i = 0; cmd_table[i].cmd_name != NULL; i++) {
         if (strcmp(argv[0], cmd_table[i].cmd_name) == 0) {

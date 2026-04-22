@@ -14,11 +14,32 @@ typedef struct room_loc_s room_loc_t;
 extern room_loc_t player_spawn_tree_hole;
 extern room_loc_t player_spawn_east_forest;
 extern room_loc_t player_spawn;
+extern room_loc_t room_test;
+
+typedef enum room_npc_type_e     room_npc_type_t;
+typedef struct room_npc_neut_s   room_npc_neut_t;
+typedef struct room_npc_static_s room_npc_static_t;
+typedef struct room_npc_enemy_s  room_npc_enemy_t;
+
+typedef enum room_npc_type_e {
+    NPC_TYPE_NONE = 0,
+    NPC_TYPE_STATIC,
+    NPC_TYPE_NEUT,
+    NPC_TYPE_ENEMY,
+} room_npc_type_t;
 
 /* NPC 身份类型 */
 typedef struct room_npc_neut_s {
 
 } room_npc_neut_t;
+
+typedef struct room_npc_static_s {
+
+} room_npc_static_t;
+
+typedef struct room_npc_enemy_s {
+
+} room_npc_enemy_t;
 
 /**
  * @brief 房间/地点结构体
@@ -53,6 +74,14 @@ typedef struct room_npc_s {
 
     int room_npc_hp, room_npc_max_hp; /* 生命值（为战斗系统预留） */
     int room_npc_atk, room_npc_def;
+
+    room_npc_type_t room_npc_type;
+
+    union {
+        room_npc_neut_t   npc_neutual;
+        room_npc_static_t npc_static;
+        room_npc_enemy_t  npc_enemy;
+    } room_npc_type_u;
 
 } room_npc_t;
 

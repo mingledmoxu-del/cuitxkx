@@ -9,7 +9,7 @@ player_def_t omo = {
     .max_mp = 100,
     .spirit = 100,
     .max_spirit = 100,
-    .player_cur_loc = &player_spawn,
+    .player_cur_loc = &room_test,
 };
 
 int player_get_atk(player_def_t *player_id) {

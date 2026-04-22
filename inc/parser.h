@@ -31,6 +31,7 @@ int cmd_wear(int argc, char **argv);  /* 检视指定物体或人物的详细描
 int cmd_check(int argc, char **argv); /* 检视指定物体或人物的详细描述 */
 int cmd_eat(int argc, char **argv);   /* 检视指定物体或人物的详细描述 */
 int cmd_cast(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
+int cmd_kill(int argc, char **argv);  /* 检视指定物体或人物的详细描述 */
 
 /* --- 核心解析器函数声明 --- */
 
@@ -59,4 +60,5 @@ int parser_split(char *line, char **argv, int max_args);
  */
 int parser_execute(int argc, char **argv);
 
+void combat_tick(player_def_t *player_id);
 #endif

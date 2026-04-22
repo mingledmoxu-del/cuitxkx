@@ -48,7 +48,7 @@ int player_add_skill(player_def_t *player_id, player_skill_t *skill) {
     while (curr_node != NULL) {
         if (strcmp(curr_node->skill->skill_id, skill->skill_id) == 0) {
             printf("已学会该技能。\n");
-            return 0;
+            return 1;
         }
         curr_node = curr_node->next;
     }

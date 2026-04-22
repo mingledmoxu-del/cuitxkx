@@ -21,6 +21,8 @@ typedef struct player_def_s {
     inventory_node_t *player_bag;
     skill_node_t     *player_skill;
     player_skill_t   *active_skill;
+    room_npc_t       *fight_target;
+    time_t            last_atk_time;
 } player_def_t;
 
 extern player_def_t omo;
@@ -28,4 +30,6 @@ extern player_def_t omo;
 void player_add_item(player_def_t *player, item_t *item);
 int  player_get_atk(player_def_t *player_id);
 int  player_get_def(player_def_t *player_id);
+void combat_tick(player_def_t *player_id);
+
 #endif
