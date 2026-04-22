@@ -9,6 +9,11 @@
 
 /* NPC 结构体的前置声明 */
 typedef struct room_npc_s room_npc_t;
+typedef struct room_loc_s room_loc_t;
+
+extern room_loc_t player_spawn_tree_hole;
+extern room_loc_t player_spawn_east_forest;
+extern room_loc_t player_spawn;
 
 /* NPC 身份类型 */
 typedef struct room_npc_neut_s {

@@ -15,9 +15,10 @@ extern item_t     player_spawn_treehole_sword;
  */
 room_loc_t player_spawn = {
     .room_id = 0,
-    .room_name = "新手村",
-    .room_desc = SPAWN_DECS,                 /* 引用 text/room_spawn.h 中的宏 */
-    .down = &player_spawn_tree_hole,         /* 向下指向树洞 */
+    .room_name = "青溪渡",
+    .room_desc = SPAWN_DECS,         /* 引用 text/room_spawn.h 中的宏 */
+    .down = &player_spawn_tree_hole, /* 向下指向树洞 */
+    .east = &player_spawn_east_forest,
     .room_npc[0] = &player_spawn_npc_guider, /* 安置引导 NPC */
 };
 
@@ -30,6 +31,13 @@ room_loc_t player_spawn_tree_hole = {
     .room_desc = SPAWN_TREEHOLE_DESC, /* 引用 text/room_spawn_treehole.h 中的宏 */
     .up = &player_spawn,              /* 向上返回新手村 */
     .room_item[0] = &weapon_sword,
+};
+
+room_loc_t player_spawn_east_forest = {
+    .room_id = 2,
+    .room_name = "快活林",
+    .room_desc = "一片树林\n",
+    .west = &player_spawn,
 };
 
 /**

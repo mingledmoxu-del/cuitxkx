@@ -12,6 +12,7 @@ typedef struct player_def_s {
     int               hp, max_hp; // 增加当前血量和上限
     int               mp, max_mp;
     int               spirit, max_spirit;
+    int               player_money;
     item_t           *weapon;
     item_t           *armor_head;
     item_t           *armor_body;
