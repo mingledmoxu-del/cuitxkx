@@ -72,8 +72,10 @@ typedef struct room_npc_s {
     const char *room_npc_desc;   /* 检视 (see) 时显示的详细描述 */
     const char *room_npc_dialog; /* 进行对话 (talk) 时显示的默认内容 */
 
-    int room_npc_hp, room_npc_max_hp; /* 生命值（为战斗系统预留） */
-    int room_npc_atk, room_npc_def;
+    int    room_npc_hp, room_npc_max_hp; /* 生命值（为战斗系统预留） */
+    int    room_npc_atk, room_npc_def;
+    time_t room_last_fight_time;
+    time_t room_fight_interval;
 
     room_npc_type_t room_npc_type;
 

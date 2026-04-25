@@ -4,20 +4,30 @@ void combat_tick(player_def_t *player_id) {
     if (player_id->fight_target == NULL)
         return;
     time_t time_now = time(NULL);
-    if (time_now - player_id->last_atk_time < 2)
-        return;
+    if (time_now - player_id->last_atk_time >= player_id->fight_interval) {
+        printf("你对这%s发起攻击。\n", player_id->fight_target->room_npc_name);
+        int player_dmg = player_get_atk(&omo) - player_id->fight_target->room_npc_def;
+        player_id->fight_target->room_npc_hp -= player_dmg;
+        printf("造成%d点伤害，剩余%d血量。\n", player_dmg, player_id->fight_target->room_npc_hp);
+        player_id->last_atk_time = time_now;
+        printf("\n");
+    }
 
-    printf("你对这%s发起攻击。\n", player_id->fight_target->room_npc_name);
-    int player_dmg = player_get_atk(&omo) - player_id->fight_target->room_npc_def;
-    player_id->fight_target->room_npc_hp -= player_dmg;
-    printf("造成%d点伤害，剩余%d血量。\n", player_dmg, player_id->fight_target->room_npc_hp);
-
-    player_id->last_atk_time = time_now;
+    if (time_now - player_id->fight_target->room_last_fight_time >= player_id->fight_target->room_fight_interval) {
+        printf("%s对你发起攻击。\n", player_id->fight_target->room_npc_name);
+        int target_dmg = player_id->fight_target->room_npc_atk;
+        player_id->hp -= target_dmg;
+        printf("对你造成%d伤害，你剩余%d血量。\n", target_dmg, player_id->hp);
+        player_id->fight_target->room_last_fight_time = time_now;
+        printf("\n");
+    }
 
     if (player_id->fight_target->room_npc_hp <= 0) {
         printf("%s死了\n", player_id->fight_target->room_npc_name);
         player_id->fight_target = NULL;
+        printf("战斗结束。\n");
     }
+
 }
 
 /**
@@ -714,7 +724,6 @@ int cmd_kill(int argc, char **argv) {
  */
 char *parser_input(char *buf, int size) {
     /* 显示带有当前房间名称的交互提示符 */
-    printf(CLR_GREEN CLR_BOLD "%s" CLR_RESET " > ", omo.player_cur_loc->room_name);
 
     if (fgets(buf, size, stdin)) {
         /* 去除输入行尾的换行符 \n */

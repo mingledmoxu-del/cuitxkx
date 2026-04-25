@@ -9,6 +9,7 @@ player_def_t omo = {
     .max_mp = 100,
     .spirit = 100,
     .max_spirit = 100,
+    .fight_interval = 2,
     .player_cur_loc = &room_test,
 };
 

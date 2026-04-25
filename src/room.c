@@ -60,6 +60,7 @@ room_npc_t room_test_enemy = {
     .room_npc_def = 3,
     .room_npc_max_hp = 50,
     .room_npc_hp = 50,
+    .room_fight_interval = 3,
     .room_npc_type = NPC_TYPE_ENEMY,
     .room_npc_desc = "一托史莱姆",
 };

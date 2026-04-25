@@ -23,6 +23,7 @@ typedef struct player_def_s {
     player_skill_t   *active_skill;
     room_npc_t       *fight_target;
     time_t            last_atk_time;
+    time_t            fight_interval;
 } player_def_t;
 
 extern player_def_t omo;

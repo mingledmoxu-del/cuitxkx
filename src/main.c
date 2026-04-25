@@ -56,31 +56,46 @@ int main() {
     usleep(300000);
     printf(">正在初始化人物...\n");
     system("clear");
+    int need_prompt = 1;
     /* 物品与角色属性初始化 */
     player_add_item(&omo, &con_wound_medic);
     player_add_item(&omo, &con_foucus_medic);
     player_add_skill(&omo, &skill_zazen);
     /* 初始进入游戏时自动展示周遭环境 */
     cmd_look(1, NULL);
-    /* 核心游戏引擎循环 */
+    /* src/main.c */
+    static int was_fighting = 0; // 记录上一轮是否在战斗中
     while (1) {
-        // 1. 检查有没有用户输入
+        int is_fighting = (omo.fight_target != NULL);
+        // [探测点]：如果刚才在打，现在不打了，说明战斗刚结束
+        if (was_fighting && !is_fighting) {
+            need_prompt = 1;
+        }
+        was_fighting = is_fighting;
+        // [显示点]：只有在需要提示符，且当前没在打架时才显示
+        if (need_prompt && !is_fighting) {
+            printf("\n" CLR_GREEN CLR_BOLD "%s" CLR_RESET " > ", omo.player_cur_loc->room_name);
+            fflush(stdout);
+            need_prompt = 0;
+        }
         if (is_input_pending()) {
             if (parser_input(parser_buf, sizeof(parser_buf)) != NULL) {
                 parser_argc = parser_split(parser_buf, parser_argv, 5);
-                if (parser_execute(parser_argc, parser_argv))
-                    break;
+
+                // 1. 如果有词，执行逻辑
+                if (parser_argc > 0) {
+                    parser_execute(parser_argc, parser_argv);
+                }
+                // 2. 无论有没有词（哪怕是空回车），
+                // 只要当前没在战斗，就允许主循环在下一圈刷出提示符
+                if (omo.fight_target == NULL) {
+                    need_prompt = 1;
+                }
             }
         }
-
-        // 处理战斗心跳
         combat_tick(&omo);
-        // 处理怪物状态
-
-        // usleep一下
         usleep(10000);
     }
-
     /* 游戏程序结束 */
     system("clear");
     return 0;
